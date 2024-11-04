@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  hello_world_docker:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/usr/src/app  # Mount the current directory as the project directory within the container
+

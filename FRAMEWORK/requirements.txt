@@ -1,0 +1,13 @@
+confluent-kafka
+datetime
+neo4j
+redis
+Django>=3.0,<4.0
+openai
+langchain
+tiktoken
+langchain_openai
+langchainhub
+langchain-community
+firebase_admin
+pandas

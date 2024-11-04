@@ -1,0 +1,71 @@
+version: '3'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181 # host_port:container_port
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092 # host_port:container_port
+      - 29093:29093
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092, PLAINTEXT_HOST://localhost:29092, PLAINTEXT_HOST_IP://131.155.223.45:29093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT, PLAINTEXT_HOST_IP:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  web: # Web Application
+    build:
+      context: .
+      dockerfile: web.Dockerfile
+    ports:
+      - "8000:8000"
+      - "9002:7687" # host_port:container_port
+    volumes:
+      - ./django/web-project:/usr/src/app  # Mount the current directory as the project directory within the container
+      - shared-data:/usr/src/app/shared # Mount the newly created 'shared-data' volume to the '/usr/src/app/shared' directory in the docker container.
+
+  manager: # Manager Logic for registration and run-time coupling.
+    build:
+      context: .
+      dockerfile: manager.Dockerfile
+    depends_on:
+      - zookeeper
+      - kafka
+    volumes:
+      - shared-data:/usr/src/app/shared # Mount the newly created 'shared-data' volume to the '/usr/src/app/shared' directory in the docker container.
+
+  dtsrs_app: # Smart Room Applicaton Logic
+    build:
+      context: .
+      dockerfile: dtsrs_app.Dockerfile
+    depends_on:
+      - redis
+
+  dtsrs_client: # Smart Room client
+    build:
+      context: .
+      dockerfile: dtsrs_client.Dockerfile
+    depends_on:
+      - redis
+      - manager
+      - kafka
+
+  redis:
+    image: redis:latest  # Use the official Redis image
+    ports:
+      - "6379:6379"  # Map container port 6379 to host port 6379
+
+volumes:
+  shared-data: # Create a shared volume such that 'web' and 'manager' containers can exchnage data with each other
+  neo4j-data1: # Creat a volume to persist your neo4j graph data.
+  neo4j-data2: # Creat a volume to persist your neo4j graph data.

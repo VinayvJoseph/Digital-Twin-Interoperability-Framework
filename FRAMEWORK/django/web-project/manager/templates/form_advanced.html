@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    background-color: #f0f8ff;  /* Light blue background */
+    font-family: Arial, sans-serif;  /* Using Arial or a similar font */
+  }
+  .container {
+    width: 50%;
+    float: left;
+    padding: 20px;
+    border-right: 1px solid #ccc;  /* Add a border for separation */
+    border-bottom: 1px solid #ccc;  /* Add a border for separation */
+    background-color: #e0e0e0;  /* Light gray background */
+  }
+  label {
+    display: inline-block;
+    width: 120px;  /* Adjust label width as needed */
+    text-align: right;
+  }
+  input[type="text"] {
+    width: 200px;  /* Adjust input width as needed */
+    margin-left: 10px;
+  }
+  h1 {
+    text-align: center;  /* Center the title */
+  }
+  /* Style for the submit button */
+  button[type="submit"] {
+    background-color: #4CAF50;  /* Green background */
+    color: white;
+    padding: 10px 20px;  /* Increase padding for bigger size */
+    border: none;
+    border-radius: 5px;  /* Add rounded corners */
+    font-size: 16px;  /* Increase font size */
+    cursor: pointer;  /* Make it look clickable */
+    text-align: center;  /* Center the button text */
+    margin: 0 auto;  /* Center the button horizontally */
+    display: block;  /* Make the button occupy a full line */
+  }
+  /* Style for the second container */
+  .second-container {
+    width: 50%;
+    float: left;
+    padding: 20px;
+    background-color: #e0e0e0;  /* Light gray background */
+    margin-top: 20px;  /* Add space between containers */
+  }
+  /* Style for Query and Result paragraphs */
+  .second-container p {
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  table {
+    width: 100%;  /* Stretch table to container width */
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 5px;
+    border: 1px solid #ccc;
+    text-align: left;
+  }
+  .DT-container {
+    width: 100%;
+    float: left;
+    padding: 20px;
+    border-top: 1px solid #ccc;  /* Add a border for separation */
+    border-right: 1px solid #ccc;  /* Add a border for separation */
+    border-bottom: 1px solid #ccc;  /* Add a border for separation */
+    background-color: #e0e0e0;  /* Light gray background */
+    margin-top: 20px;  /* Add space between containers */
+    margin-bottom: 20px;  /* Add space between containers */
+  }
+</style>
+</head>
+<body>
+  <h1>DIGITAL TWIN NETWORK</h1>
+
+  <div class="DT-container">
+    <h2 style="text-align: center;">Available Digital Twins</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>S.no</th>
+          <th>Digital Twin</th>
+          <th>Clients</th>
+          <th>Client ID</th>
+          <th>Knowledge Graph IP</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for item in kg_data %}
+          <tr>
+            <td> * </td>
+            <td>{{ item.dt_name }} : {{item.dt_description}}</td>
+            <td>
+              <ol>  {% for client in item.clients %}
+                  <li>{{ client }}</li>
+                {% endfor %}
+              </ol>
+            </td>
+            <td>
+              <ol>  {% for client_id in item.client_ids %}
+                  <li>{{ client_id }}</li>
+                {% endfor %}
+              </ol>
+            </td>
+            <td> {{item.kg_ip}}</td>
+
+          </tr>
+        {% endfor %}
+      </tbody>
+    
+    </table>
+  </div>
+
+  <div class="container">
+    <h2 style="text-align: center;"> Service-Data Conector</h2>
+    <form action="{% url 'process_form' %}" method="post">
+      {% csrf_token %}
+      <label for="source">SOURCE:</label>
+      <input type="text" id="source" name="source">
+      <label for="destination">DESTINATION:</label>
+      <input type="text" id="destination" name="destination">
+      <label for="param_S">PARAMETER(S):</label>
+      <input type="text" id="param_S" name="param_S">
+      <br><br>
+      <button type="submit" name="submit_button_name" value="manager">Submit</button>
+      <br><br>
+    </form>
+  </div>
+
+  <div class="second-container">
+    <h2 style="text-align: center;">Knowledge Graph Exploration</h2>
+    <form action="{% url 'process_form' %}" method="post"> 
+      {% csrf_token %}
+      <label for="ip">IP:</label>
+      <input type="text" id="ip" name="ip">
+      <label for="query">Query:</label>
+      <input type="text" id="query" name="query">
+      <br><br>
+      <button type="submit" name="submit_button_name" value="KG">Submit</button>
+      <p>Query : {{question}}</p>
+      <p>Result : {{answer}}</p>
+    </form>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <form action="{% url 'process_form' %}" method="post">
+    {% csrf_token %}
+    <label for="param1">SOURCE:</label><br>
+    <input type="text" id="param1" name="param1"><br>
+    <label for="param2">DESTINATION:</label><br>
+    <input type="text" id="param2" name="param2"><br>
+    <label for="param3">Parameter ID:</label><br>
+    <input type="text" id="param3" name="param3"><br><br>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
